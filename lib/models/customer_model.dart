@@ -3,14 +3,12 @@ class CustomerDash {
   final String name;
   final String phone;
   final String balance;
-  bool isExpanded; // Add isExpanded field
 
   CustomerDash({
     required this.id,
     required this.name,
     required this.phone,
     required this.balance,
-    this.isExpanded = false, // Default value for isExpanded
   });
 
   factory CustomerDash.fromJson(Map<String, dynamic> json) {
