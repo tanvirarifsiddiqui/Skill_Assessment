@@ -2,24 +2,27 @@ class CustomerDash {
   final int id;
   final String name;
   final String phone;
-  final double balance;
+  final String balance;
+  bool isExpanded; // Add isExpanded field
 
   CustomerDash({
     required this.id,
     required this.name,
     required this.phone,
     required this.balance,
+    this.isExpanded = false, // Default value for isExpanded
   });
 
   factory CustomerDash.fromJson(Map<String, dynamic> json) {
     return CustomerDash(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      phone: json['phone'] ?? '',
-      balance: double.parse(json['balance'] ?? '0.0'),
+      id: json['id'],
+      name: json['name'],
+      phone: json['phone'],
+      balance: json['balance'],
     );
   }
 }
+
 
 class Customer {
   final int id;

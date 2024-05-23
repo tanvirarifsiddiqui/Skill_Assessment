@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:retina_soft_skill_test/authentitacion/registration.dart';
 import '../Services/api.dart';
 import 'package:retina_soft_skill_test/Pages/home_screen.dart';
 import 'dart:convert';
 
 import '../Global/global_variables.dart';
+import '../constants/input_decoration.dart';
 import '../models/user_model.dart';
 
 class LoginPage extends StatefulWidget {
@@ -98,18 +100,27 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email or Phone'),
+              decoration: CustomInputDecoration.buildInputDecoration('Email or Phone'),
             ),
-            if (_isOtpSent)
+            if (_isOtpSent)...[
+              SizedBox(height: 20,),
               TextField(
                 controller: _otpController,
-                decoration: InputDecoration(labelText: 'OTP Code'),
+                decoration: CustomInputDecoration.buildInputDecoration('OTP Code'),
                 keyboardType: TextInputType.number,
               ),
+            ],
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: _isOtpSent ? _login : _sendOtp,
               child: Text(_isOtpSent ? 'Login' : 'Send OTP'),
+            ),
+            SizedBox(height: 50,),
+            TextButton(
+              onPressed: () {
+                Get.to(() => RegistrationPage());
+              },
+              child: const Text("Register Here"),
             ),
           ],
         ),

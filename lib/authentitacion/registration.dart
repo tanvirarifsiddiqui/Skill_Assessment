@@ -9,6 +9,7 @@ import 'package:retina_soft_skill_test/constants/app_constants.dart';
 
 import '../Services/api.dart';
 import '../Global/global_variables.dart';
+import '../constants/input_decoration.dart';
 import '../models/user_model.dart';
 
 class RegistrationPage extends StatefulWidget {
@@ -21,12 +22,33 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final _phoneController = TextEditingController();
   final _nameController = TextEditingController();
   final _businessNameController = TextEditingController();
-  final _businessTypeIdController = TextEditingController();
   final _otpController = TextEditingController();
 
   bool _isOtpSent = false;
   bool _isRegistered = false;
   String _identifierId = '';
+  List<dynamic> _businessTypes = [];
+  int? _selectedBusinessTypeId;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBusinessTypes();
+  }
+
+  Future<void> _fetchBusinessTypes() async {
+    final response = await http.get(Uri.parse('${API.baseURL}/get-business-types'));
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      setState(() {
+        _businessTypes = responseData['business_types'];
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Failed to load business types'),
+      ));
+    }
+  }
 
   Future<void> _sendOtp() async {
     final response = await http.post(
@@ -36,7 +58,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         'phone': _phoneController.text,
         'name': _nameController.text,
         'business_name': _businessNameController.text,
-        'business_type_id': _businessTypeIdController.text,
+        'business_type_id': _selectedBusinessTypeId.toString(),
       },
     );
 
@@ -62,7 +84,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
       ));
     }
   }
-
 
   Future<void> _verifyOtp() async {
     var request = http.MultipartRequest(
@@ -100,7 +121,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
       ));
     }
   }
-
 
   Future<void> _resendOtp() async {
     final response = await http.post(
@@ -143,23 +163,38 @@ class _RegistrationPageState extends State<RegistrationPage> {
               if (!_isRegistered) ...[
                 TextField(
                   controller: _emailController,
-                  decoration: InputDecoration(labelText: 'Email'),
+                  decoration: CustomInputDecoration.buildInputDecoration('Email'),
                 ),
+                SizedBox(height: 10),
                 TextField(
                   controller: _phoneController,
-                  decoration: InputDecoration(labelText: 'Phone'),
+                  decoration: CustomInputDecoration.buildInputDecoration('Phone'),
                 ),
+                SizedBox(height: 10),
                 TextField(
                   controller: _nameController,
-                  decoration: InputDecoration(labelText: 'Name'),
+                  decoration: CustomInputDecoration.buildInputDecoration('Name'),
                 ),
+                SizedBox(height: 10),
                 TextField(
                   controller: _businessNameController,
-                  decoration: InputDecoration(labelText: 'Business Name'),
+                  decoration: CustomInputDecoration.buildInputDecoration('Business Name'),
                 ),
-                TextField(
-                  controller: _businessTypeIdController,
-                  decoration: InputDecoration(labelText: 'Business Type ID'),
+                SizedBox(height: 10),
+                DropdownButtonFormField<int>(
+                  value: _selectedBusinessTypeId,
+                  decoration: CustomInputDecoration.buildInputDecoration('Business Type'),
+                  items: _businessTypes.map<DropdownMenuItem<int>>((type) {
+                    return DropdownMenuItem<int>(
+                      value: type['id'],
+                      child: Text(type['name']),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedBusinessTypeId = value;
+                    });
+                  },
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
@@ -167,9 +202,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   child: Text('Send OTP'),
                 ),
                 if (_isOtpSent) ...[
+                  SizedBox(height: 10),
                   TextField(
                     controller: _otpController,
-                    decoration: InputDecoration(labelText: 'OTP Code'),
+                    decoration: CustomInputDecoration.buildInputDecoration('OTP Code'),
                     keyboardType: TextInputType.number,
                   ),
                   SizedBox(height: 20),
