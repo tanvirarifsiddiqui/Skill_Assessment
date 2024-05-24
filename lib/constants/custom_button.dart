@@ -1,26 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:retina_soft_skill_test/constants/app_constants.dart';
 
-class TransactionButton extends StatelessWidget {
+class CustomButton extends StatelessWidget {
+  final String text;
   final VoidCallback onPressed;
-  final String title;
+  final double minWidth;
+  final double height;
+  final double borderRadius;
+  final Gradient gradient; // Added gradient parameter
 
-  const TransactionButton({required this.onPressed, required this.title});
+  const CustomButton({
+    required this.text,
+    required this.onPressed,
+    this.minWidth = double.infinity,
+    this.height = 50,
+    this.borderRadius = 10,
+    this.gradient = AppConstants.primaryGradient// Gradient is now a required parameter
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.green, // Background color
-        minimumSize: Size(50, 30), // Width and height
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5),
-        ),
+    return Container(
+      width: minWidth,
+      height: height,
+      decoration: BoxDecoration(
+        gradient: gradient,
+        borderRadius: BorderRadius.circular(borderRadius),
       ),
-      child: Text(
-        title,
-        style: TextStyle(fontSize: 12),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent, // Set primary to transparent to see the gradient
+          shadowColor: Colors.transparent, // Remove shadow to prevent overlay
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadius),
+          ),
+        ),
+        child: Container(
+          alignment: Alignment.center,
+          constraints: BoxConstraints(
+            minWidth: minWidth,
+            minHeight: height,
+          ),
+          child: Text(
+            textAlign: TextAlign.center,
+            text,
+            style: const TextStyle(fontSize: 16, color: Colors.white), // Adjust text color as needed
+          ),
+        ),
       ),
     );
   }

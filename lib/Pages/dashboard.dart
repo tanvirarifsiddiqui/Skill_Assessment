@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:retina_soft_skill_test/Global/global_variables.dart';
-import 'dart:convert';
-
 import 'package:retina_soft_skill_test/Pages/transaction_page.dart';
 import 'package:retina_soft_skill_test/constants/app_constants.dart';
 import 'package:retina_soft_skill_test/models/customer_model.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'dart:convert';
 
 import '../constants/custom_button.dart';
 
@@ -42,7 +42,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<void> _fetchCustomers() async {
     final response = await http.get(
-      Uri.parse('https://skill-test.retinasoft.com.bd/api/v1/admin/${branchID}/$type/customers'),
+      Uri.parse(
+          'https://skill-test.retinasoft.com.bd/api/v1/admin/${branchID}/$type/customers'),
       headers: {
         'Authorization': 'Bearer $apiToken',
       },
@@ -50,11 +51,12 @@ class _DashboardPageState extends State<DashboardPage> {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      print(responseData);
-      final List<dynamic> customersData = responseData['customers']['customers'];
+      final List<dynamic> customersData =
+          responseData['customers']['customers'];
 
       setState(() {
-        _customers = customersData.map((data) => CustomerDash.fromJson(data)).toList();
+        _customers =
+            customersData.map((data) => CustomerDash.fromJson(data)).toList();
         isCustomerFetched = true;
       });
     } else {
@@ -80,7 +82,8 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _createCustomer() async {
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('https://skill-test.retinasoft.com.bd/api/v1/admin/$branchID/customer/create'),
+      Uri.parse(
+          'https://skill-test.retinasoft.com.bd/api/v1/admin/$branchID/customer/create'),
     );
     request.fields['name'] = _nameController.text;
     request.fields['phone'] = _phoneController.text;
@@ -98,7 +101,6 @@ class _DashboardPageState extends State<DashboardPage> {
     if (response.statusCode == 200) {
       final responseData = json.decode(await response.stream.bytesToString());
       if (responseData['status'] == 200) {
-        print(responseData);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(responseData['description']),
         ));
@@ -119,7 +121,8 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _updateCustomer(int customerId) async {
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse('https://skill-test.retinasoft.com.bd/api/v1/admin/$branchID/customer/$customerId/update'),
+      Uri.parse(
+          'https://skill-test.retinasoft.com.bd/api/v1/admin/$branchID/customer/$customerId/update'),
     );
     request.fields['name'] = _nameController.text;
     request.fields['phone'] = _phoneController.text;
@@ -157,7 +160,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<void> _deleteCustomer(int customerId) async {
     final response = await http.delete(
-      Uri.parse('https://skill-test.retinasoft.com.bd/api/v1/admin/$branchID/customer/$customerId/delete'),
+      Uri.parse(
+          'https://skill-test.retinasoft.com.bd/api/v1/admin/$branchID/customer/$customerId/delete'),
       headers: {
         'Authorization': 'Bearer $apiToken',
       },
@@ -186,220 +190,359 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppConstants.appBarPrimary(title: "Dashboard"),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Add Customer'),
-                      content: SingleChildScrollView(
-                        child: Column(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       showDialog(
+          //         context: context,
+          //         builder: (BuildContext context) {
+          //           return AlertDialog(
+          //             title: const Text('Add Customer'),
+          //             content: SingleChildScrollView(
+          //               child: Column(
+          //                 children: [
+          //                   TextField(
+          //                     controller: _nameController,
+          //                     decoration: InputDecoration(labelText: 'Name'),
+          //                   ),
+          //                   TextField(
+          //                     controller: _phoneController,
+          //                     decoration: InputDecoration(labelText: 'Phone'),
+          //                   ),
+          //                   TextField(
+          //                     controller: _emailController,
+          //                     decoration: InputDecoration(labelText: 'Email'),
+          //                   ),
+          //                   TextField(
+          //                     controller: _addressController,
+          //                     decoration: InputDecoration(labelText: 'Address'),
+          //                   ),
+          //                   TextField(
+          //                     controller: _areaController,
+          //                     decoration: InputDecoration(labelText: 'Area'),
+          //                   ),
+          //                   TextField(
+          //                     controller: _postCodeController,
+          //                     decoration: InputDecoration(labelText: 'Post Code'),
+          //                   ),
+          //                   TextField(
+          //                     controller: _cityController,
+          //                     decoration: InputDecoration(labelText: 'City'),
+          //                   ),
+          //                   TextField(
+          //                     controller: _stateController,
+          //                     decoration: InputDecoration(labelText: 'State'),
+          //                   ),
+          //                 ],
+          //               ),
+          //             ),
+          //             actions: <Widget>[
+          //               TextButton(
+          //                 child: Text('Cancel'),
+          //                 onPressed: () {
+          //                   Navigator.of(context).pop();
+          //                 },
+          //               ),
+          //               TextButton(
+          //                 child: Text('Create'),
+          //                 onPressed: () {
+          //                   _createCustomer();
+          //                   Navigator.of(context).pop();
+          //                 },
+          //               ),
+          //             ],
+          //           );
+          //         },
+          //       );
+          //     },
+          //     child: Text('Create Customer'),
+          //   ),
+          // ),
+          Container(
+            color: AppConstants.primaryColor,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Customer',
+                    style: TextStyle(
+                      color: AppConstants.primaryTextColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Balance',
+                    style: TextStyle(
+                      color: AppConstants.primaryTextColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          isCustomerFetched
+              ? Expanded(
+                  child: ListView.builder(
+                    itemCount: _customers.length,
+                    itemBuilder: (context, index) {
+                      final customer = _customers[index];
+                      return Slidable(
+                        key: ValueKey(customer.id),
+                        startActionPane: ActionPane(
+                          motion: ScrollMotion(),
                           children: [
-                            TextField(
-                              controller: _nameController,
-                              decoration: InputDecoration(labelText: 'Name'),
-                            ),
-                            TextField(
-                              controller: _phoneController,
-                              decoration: InputDecoration(labelText: 'Phone'),
-                            ),
-                            TextField(
-                              controller: _emailController,
-                              decoration: InputDecoration(labelText: 'Email'),
-                            ),
-                            TextField(
-                              controller: _addressController,
-                              decoration: InputDecoration(labelText: 'Address'),
-                            ),
-                            TextField(
-                              controller: _areaController,
-                              decoration: InputDecoration(labelText: 'Area'),
-                            ),
-                            TextField(
-                              controller: _postCodeController,
-                              decoration: InputDecoration(labelText: 'Post Code'),
-                            ),
-                            TextField(
-                              controller: _cityController,
-                              decoration: InputDecoration(labelText: 'City'),
-                            ),
-                            TextField(
-                              controller: _stateController,
-                              decoration: InputDecoration(labelText: 'State'),
+                            SlidableAction(
+                              onPressed: (context) {
+                                _nameController.text = customer.name;
+                                _phoneController.text = customer.phone;
+                                _emailController.text = '';
+                                _addressController.text = '';
+                                _areaController.text = '';
+                                _postCodeController.text = '';
+                                _cityController.text = '';
+                                _stateController.text = '';
+
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Update Customer'),
+                                      content: SingleChildScrollView(
+                                        child: Column(
+                                          children: <Widget>[
+                                            TextField(
+                                              controller: _nameController,
+                                              decoration: InputDecoration(
+                                                  labelText: 'Name'),
+                                            ),
+                                            TextField(
+                                              controller: _phoneController,
+                                              decoration: InputDecoration(
+                                                  labelText: 'Phone'),
+                                            ),
+                                            TextField(
+                                              controller: _emailController,
+                                              decoration: InputDecoration(
+                                                  labelText: 'Email'),
+                                            ),
+                                            TextField(
+                                              controller: _addressController,
+                                              decoration: InputDecoration(
+                                                  labelText: 'Address'),
+                                            ),
+                                            TextField(
+                                              controller: _areaController,
+                                              decoration: InputDecoration(
+                                                  labelText: 'Area'),
+                                            ),
+                                            TextField(
+                                              controller: _postCodeController,
+                                              decoration: InputDecoration(
+                                                  labelText: 'Post Code'),
+                                            ),
+                                            TextField(
+                                              controller: _cityController,
+                                              decoration: InputDecoration(
+                                                  labelText: 'City'),
+                                            ),
+                                            TextField(
+                                              controller: _stateController,
+                                              decoration: InputDecoration(
+                                                  labelText: 'State'),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text('Cancel'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: Text('Update'),
+                                          onPressed: () {
+                                            _updateCustomer(customer.id);
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              backgroundColor: Colors
+                                  .blue, // Change this to your desired background color
+                              foregroundColor:
+                                  Colors.white, // Icon and text color
+                              icon: Icons.edit,
+                              label: 'Edit',
                             ),
                           ],
                         ),
-                      ),
-                      actions: <Widget>[
-                        TextButton(
-                          child: Text('Cancel'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        TextButton(
-                          child: Text('Create'),
-                          onPressed: () {
-                            _createCustomer();
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              child: Text('Create Customer'),
-            ),
-            const SizedBox(height: 20),
-            isCustomerFetched
-                ? Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    columns: [
-                      DataColumn(label: Text('Customer')),
-                      DataColumn(label: Text('Actions')),
-                    ],
-                    rows: List<DataRow>.generate(
-                      _customers.length,
-                          (index) {
-                        final customer = _customers[index];
-                        return DataRow(
-                          color: MaterialStateProperty.resolveWith<Color>(
-                                (Set<MaterialState> states) {
-                              return index.isEven ? Colors.grey[200]! : Colors.white;
-                            },
-                          ),
-                          cells: [
-                            DataCell(
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(customer.name),
-                                  SizedBox(height: 5),
-                                  Text(customer.phone, style: TextStyle(color: Colors.grey)),
-                                ],
-                              ),
+                        endActionPane: ActionPane(
+                          motion: ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) {
+                                _deleteCustomer(customer.id);
+                              },
+                              backgroundColor: Colors
+                                  .red, // Change this to your desired background color
+                              foregroundColor:
+                                  Colors.white, // Icon and text color
+                              icon: Icons.delete,
+                              label: 'Delete',
                             ),
-                            DataCell(
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: Icon(Icons.edit),
-                                    onPressed: () {
-                                      // Populate the text fields with customer data
-                                      _nameController.text = customer.name;
-                                      _phoneController.text = customer.phone;
-                                      _emailController.text = '';
-                                      _addressController.text = '';
-                                      _areaController.text = '';
-                                      _postCodeController.text = '';
-                                      _cityController.text = '';
-                                      _stateController.text = '';
-
-                                      // Show dialog for updating customer
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: Text('Update Customer'),
-                                            content: SingleChildScrollView(
-                                              child: Column(
-                                                children: <Widget>[
-                                                  TextField(
-                                                    controller: _nameController,
-                                                    decoration: InputDecoration(labelText: 'Name'),
-                                                  ),
-                                                  TextField(
-                                                    controller: _phoneController,
-                                                    decoration: InputDecoration(labelText: 'Phone'),
-                                                  ),
-                                                  TextField(
-                                                    controller: _emailController,
-                                                    decoration: InputDecoration(labelText: 'Email'),
-                                                  ),
-                                                  TextField(
-                                                    controller: _addressController,
-                                                    decoration: InputDecoration(labelText: 'Address'),
-                                                  ),
-                                                  TextField(
-                                                    controller: _areaController,
-                                                    decoration: InputDecoration(labelText: 'Area'),
-                                                  ),
-                                                  TextField(
-                                                    controller: _postCodeController,
-                                                    decoration: InputDecoration(labelText: 'Post Code'),
-                                                  ),
-                                                  TextField(
-                                                    controller: _cityController,
-                                                    decoration: InputDecoration(labelText: 'City'),
-                                                  ),
-                                                  TextField(
-                                                    controller: _stateController,
-                                                    decoration: InputDecoration(labelText: 'State'),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                child: Text('Cancel'),
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                              TextButton(
-                                                child: Text('Update'),
-                                                onPressed: () {
-                                                  _updateCustomer(customer.id);
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.delete),
-                                    onPressed: () {
-                                      _deleteCustomer(customer.id);
-                                    },
-                                  ),
-                                  TransactionButton(
-                                    onPressed: () {
-                                      Get.to(() => TransactionPage(
-                                        token: user!.apiToken,
-                                        branchId: user!.branchId,
-                                        customerId: customer.id,
-                                      ));
-                                    },
-                                    title: 'Transaction',
-                                  ),
-                                ],
-                              ),
+                          ],
+                        ),
+                        child: ListTile(
+                          textColor: AppConstants.primaryTextColor,
+                          tileColor: AppConstants.primaryColor,
+                          title: Container(
+                            padding: const EdgeInsets.only(top: 5, bottom: 5),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width *
+                                      0.4, //solved by media query
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(customer.name,
+                                            softWrap: true,
+                                            style: const TextStyle(
+                                                color: AppConstants
+                                                    .primaryTextColor,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500)),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(customer.phone,
+                                            softWrap: true,
+                                            style: const TextStyle(
+                                                color: AppConstants
+                                                    .primaryTextColor,
+                                                fontSize: 16)),
+                                      ]),
+                                ),
+                                const Spacer(),
+                                Text(customer.balance)
+                              ],
+                            ),
+                          ),
+                          // title: Text(customer.name),
+                          // subtitle: Text(customer.phone),
+                          // trailing: Text(customer.balance), // Adjust this to show actual balance if available
+                          onTap: () {
+                            Get.to(() => TransactionPage(
+                                  token: user!.apiToken,
+                                  branchId: user!.branchId,
+                                  customerId: customer.id,
+                                ));
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                )
+              : const Center(child: CircularProgressIndicator()),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: CustomButton(
+                  borderRadius: 15,
+                  minWidth: 120,
+                  height: 70,
+                  text: "Add Customer",
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Add Customer'),
+                          content: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                TextField(
+                                  controller: _nameController,
+                                  decoration:
+                                      InputDecoration(labelText: 'Name'),
+                                ),
+                                TextField(
+                                  controller: _phoneController,
+                                  decoration:
+                                      InputDecoration(labelText: 'Phone'),
+                                ),
+                                TextField(
+                                  controller: _emailController,
+                                  decoration:
+                                      InputDecoration(labelText: 'Email'),
+                                ),
+                                TextField(
+                                  controller: _addressController,
+                                  decoration:
+                                      InputDecoration(labelText: 'Address'),
+                                ),
+                                TextField(
+                                  controller: _areaController,
+                                  decoration:
+                                      InputDecoration(labelText: 'Area'),
+                                ),
+                                TextField(
+                                  controller: _postCodeController,
+                                  decoration:
+                                      InputDecoration(labelText: 'Post Code'),
+                                ),
+                                TextField(
+                                  controller: _cityController,
+                                  decoration:
+                                      InputDecoration(labelText: 'City'),
+                                ),
+                                TextField(
+                                  controller: _stateController,
+                                  decoration:
+                                      InputDecoration(labelText: 'State'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: Text('Create'),
+                              onPressed: () {
+                                _createCustomer();
+                                Navigator.of(context).pop();
+                              },
                             ),
                           ],
                         );
                       },
-                    ),
-                  ),
-                ),
-              ),
-            )
-                : const Center(child: CircularProgressIndicator()),
-          ],
-        ),
+                    );
+                  },
+                )),
+          ),
+        ],
       ),
     );
   }
