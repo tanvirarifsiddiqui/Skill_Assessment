@@ -7,7 +7,7 @@ import 'package:retina_soft_skill_test/constants/app_constants.dart';
 import 'package:retina_soft_skill_test/models/customer_model.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'dart:convert';
-
+import '../Services/api.dart';
 import '../constants/custom_button.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -43,7 +43,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _fetchCustomers() async {
     final response = await http.get(
       Uri.parse(
-          'https://skill-test.retinasoft.com.bd/api/v1/admin/${branchID}/$type/customers'),
+          '${API.baseURL}/admin/${branchID}/$type/customers'),
       headers: {
         'Authorization': 'Bearer $apiToken',
       },
@@ -83,7 +83,7 @@ class _DashboardPageState extends State<DashboardPage> {
     var request = http.MultipartRequest(
       'POST',
       Uri.parse(
-          'https://skill-test.retinasoft.com.bd/api/v1/admin/$branchID/customer/create'),
+          '${API.baseURL}/admin/$branchID/customer/create'),
     );
     request.fields['name'] = _nameController.text;
     request.fields['phone'] = _phoneController.text;
@@ -122,7 +122,7 @@ class _DashboardPageState extends State<DashboardPage> {
     var request = http.MultipartRequest(
       'POST',
       Uri.parse(
-          'https://skill-test.retinasoft.com.bd/api/v1/admin/$branchID/customer/$customerId/update'),
+          '${API.baseURL}/admin/$branchID/customer/$customerId/update'),
     );
     request.fields['name'] = _nameController.text;
     request.fields['phone'] = _phoneController.text;
@@ -161,7 +161,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _deleteCustomer(int customerId) async {
     final response = await http.delete(
       Uri.parse(
-          'https://skill-test.retinasoft.com.bd/api/v1/admin/$branchID/customer/$customerId/delete'),
+          '${API.baseURL}/admin/$branchID/customer/$customerId/delete'),
       headers: {
         'Authorization': 'Bearer $apiToken',
       },
@@ -406,144 +406,146 @@ class _DashboardPageState extends State<DashboardPage> {
                             ),
                           ],
                         ),
-                        child: ListTile(
-                          textColor: AppConstants.primaryTextColor,
-                          tileColor: AppConstants.primaryColor,
-                          title: Container(
-                            padding: const EdgeInsets.only(top: 5, bottom: 5),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width *
-                                      0.4, //solved by media query
-                                  child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(customer.name,
-                                            softWrap: true,
-                                            style: const TextStyle(
-                                                color: AppConstants
-                                                    .primaryTextColor,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500)),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        Text(customer.phone,
-                                            softWrap: true,
-                                            style: const TextStyle(
-                                                color: AppConstants
-                                                    .primaryTextColor,
-                                                fontSize: 16)),
-                                      ]),
-                                ),
-                                const Spacer(),
-                                Text(customer.balance)
-                              ],
-                            ),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 1),
+                          decoration: BoxDecoration(
+                            color: AppConstants.primaryColor,
+                            borderRadius: BorderRadius.circular(12.0),
                           ),
-                          // title: Text(customer.name),
-                          // subtitle: Text(customer.phone),
-                          // trailing: Text(customer.balance), // Adjust this to show actual balance if available
-                          onTap: () {
-                            Get.to(() => TransactionPage(
-                                  token: user!.apiToken,
-                                  branchId: user!.branchId,
-                                  customerId: customer.id,
-                                ));
-                          },
+                          child: ListTile(
+                            textColor: AppConstants.primaryTextColor,
+                            title: Container(
+                              padding: const EdgeInsets.only(top: 5, bottom: 5),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.4, //solved by media query
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(customer.name,
+                                              softWrap: true,
+                                              style: const TextStyle(
+                                                  color: AppConstants
+                                                      .primaryTextColor,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w500)),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(customer.phone,
+                                              softWrap: true,
+                                              style: const TextStyle(
+                                                  color: AppConstants
+                                                      .primaryTextColor,
+                                                  fontSize: 16)),
+                                        ]),
+                                  ),
+                                  const Spacer(),
+                                  Text(customer.balance)
+                                ],
+                              ),
+                            ),
+                            // title: Text(customer.name),
+                            // subtitle: Text(customer.phone),
+                            // trailing: Text(customer.balance), // Adjust this to show actual balance if available
+                            onTap: () {
+                              Get.to(() => TransactionPage(
+                                    token: user!.apiToken,
+                                    branchId: user!.branchId,
+                                    customerId: customer.id,
+                                  ));
+                            },
+                          ),
                         ),
                       );
                     },
                   ),
                 )
               : const Center(child: CircularProgressIndicator()),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: CustomButton(
-                  borderRadius: 15,
-                  minWidth: 120,
-                  height: 70,
-                  text: "Add Customer",
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Add Customer'),
-                          content: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                TextField(
-                                  controller: _nameController,
-                                  decoration:
-                                      InputDecoration(labelText: 'Name'),
-                                ),
-                                TextField(
-                                  controller: _phoneController,
-                                  decoration:
-                                      InputDecoration(labelText: 'Phone'),
-                                ),
-                                TextField(
-                                  controller: _emailController,
-                                  decoration:
-                                      InputDecoration(labelText: 'Email'),
-                                ),
-                                TextField(
-                                  controller: _addressController,
-                                  decoration:
-                                      InputDecoration(labelText: 'Address'),
-                                ),
-                                TextField(
-                                  controller: _areaController,
-                                  decoration:
-                                      InputDecoration(labelText: 'Area'),
-                                ),
-                                TextField(
-                                  controller: _postCodeController,
-                                  decoration:
-                                      InputDecoration(labelText: 'Post Code'),
-                                ),
-                                TextField(
-                                  controller: _cityController,
-                                  decoration:
-                                      InputDecoration(labelText: 'City'),
-                                ),
-                                TextField(
-                                  controller: _stateController,
-                                  decoration:
-                                      InputDecoration(labelText: 'State'),
-                                ),
-                              ],
-                            ),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              child: Text('Cancel'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            TextButton(
-                              child: Text('Create'),
-                              onPressed: () {
-                                _createCustomer();
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                )),
-          ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppConstants.secondaryColor,
+        child: Icon(
+          color: AppConstants.primaryTextColor,
+            Icons.add
+        ),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Add Customer'),
+                content: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: _nameController,
+                        decoration:
+                        InputDecoration(labelText: 'Name'),
+                      ),
+                      TextField(
+                        controller: _phoneController,
+                        decoration:
+                        InputDecoration(labelText: 'Phone'),
+                      ),
+                      TextField(
+                        controller: _emailController,
+                        decoration:
+                        InputDecoration(labelText: 'Email'),
+                      ),
+                      TextField(
+                        controller: _addressController,
+                        decoration:
+                        InputDecoration(labelText: 'Address'),
+                      ),
+                      TextField(
+                        controller: _areaController,
+                        decoration:
+                        InputDecoration(labelText: 'Area'),
+                      ),
+                      TextField(
+                        controller: _postCodeController,
+                        decoration:
+                        InputDecoration(labelText: 'Post Code'),
+                      ),
+                      TextField(
+                        controller: _cityController,
+                        decoration:
+                        InputDecoration(labelText: 'City'),
+                      ),
+                      TextField(
+                        controller: _stateController,
+                        decoration:
+                        InputDecoration(labelText: 'State'),
+                      ),
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: Text('Create'),
+                    onPressed: () {
+                      _createCustomer();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      )
     );
   }
 }
