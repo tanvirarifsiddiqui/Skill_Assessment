@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:retina_soft_skill_test/Global/global_variables.dart';
 import 'package:retina_soft_skill_test/Pages/transaction_page.dart';
 import 'package:retina_soft_skill_test/constants/app_constants.dart';
-import 'package:retina_soft_skill_test/models/customer_model.dart';
+import 'package:retina_soft_skill_test/models/customer_supplier_model.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'dart:convert';
 import '../Services/api.dart';
@@ -31,7 +31,7 @@ class _CustomerPageState extends State<CustomerPage> {
   int branchID = user!.branchId;
   bool isCustomerFetched = false;
 
-  List<Customer> _customers = [];
+  List<CustomerSupplier> _customers = [];
 
   @override
   void initState() {
@@ -55,7 +55,7 @@ class _CustomerPageState extends State<CustomerPage> {
 
       setState(() {
         _customers =
-            customersData.map((data) => Customer.fromJson(data)).toList();
+            customersData.map((data) => CustomerSupplier.fromJson(data)).toList();
         isCustomerFetched = true;
       });
     } else {
@@ -385,7 +385,7 @@ class _CustomerPageState extends State<CustomerPage> {
                               Get.to(() => TransactionPage(
                                     token: user!.apiToken,
                                     branchId: user!.branchId,
-                                    customerId: customer.id,
+                                    Id: customer.id,
                                   ));
                             },
                           ),

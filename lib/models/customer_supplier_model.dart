@@ -1,18 +1,18 @@
-class Customer {
+class CustomerSupplier {
   final int id;
   final String name;
   final String phone;
   final String balance;
 
-  Customer({
+  CustomerSupplier({
     required this.id,
     required this.name,
     required this.phone,
     required this.balance,
   });
 
-  factory Customer.fromJson(Map<String, dynamic> json) {
-    return Customer(
+  factory CustomerSupplier.fromJson(Map<String, dynamic> json) {
+    return CustomerSupplier(
       id: json['id'],
       name: json['name'],
       phone: json['phone'],

@@ -12,13 +12,13 @@ import 'package:retina_soft_skill_test/models/transaction_model.dart';
 class TransactionPage extends StatefulWidget {
   final String token;
   final int branchId;
-  final int customerId;
+  final int Id;
 
   const TransactionPage({
     Key? key,
     required this.token,
     required this.branchId,
-    required this.customerId,
+    required this.Id,
   }) : super(key: key);
 
   @override
@@ -45,7 +45,7 @@ class _TransactionPageState extends State<TransactionPage> {
   Future<void> _fetchTransactions() async {
     final response = await http.get(
       Uri.parse(
-          '${API.baseURL}/admin/${widget.branchId}/customer/${widget.customerId}/transactions'),
+          '${API.baseURL}/admin/${widget.branchId}/customer/${widget.Id}/transactions'),
       headers: {
         'Authorization': 'Bearer ${widget.token}',
       },
@@ -74,7 +74,7 @@ class _TransactionPageState extends State<TransactionPage> {
       Uri.parse(
           'https://skill-test.retinasoft.com.bd/api/v1/admin/${widget.branchId}/customer/transaction/create'),
     );
-    request.fields['customer_id'] = widget.customerId.toString();
+    request.fields['customer_id'] = widget.Id.toString();
     request.fields['amount'] = _amountController.text;
     request.fields['type'] = type.toString();
     request.fields['transaction_date'] = _transactionDateTimeController.text;

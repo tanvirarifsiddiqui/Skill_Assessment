@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:retina_soft_skill_test/Global/global_variables.dart';
 import 'package:retina_soft_skill_test/Pages/transaction_page.dart';
 import 'package:retina_soft_skill_test/constants/app_constants.dart';
-import 'package:retina_soft_skill_test/models/customer_model.dart';
+import 'package:retina_soft_skill_test/models/customer_supplier_model.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'dart:convert';
 import '../Services/api.dart';
@@ -29,17 +29,17 @@ class _SupplierPageState extends State<SupplierPage> {
 
   String apiToken = user!.apiToken;
   int branchID = user!.branchId;
-  bool isCustomerFetched = false;
+  bool isSupplierFetched = false;
 
-  List<Customer> _customers = [];
+  List<CustomerSupplier> _suppliers = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchCustomers();
+    _fetchSuppliers();
   }
 
-  Future<void> _fetchCustomers() async {
+  Future<void> _fetchSuppliers() async {
     final response = await http.get(
       Uri.parse(
           '${API.baseURL}/admin/${branchID}/$type/customers'),
@@ -50,18 +50,18 @@ class _SupplierPageState extends State<SupplierPage> {
     print(response.body);
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      final List<dynamic> customersData =
+      final List<dynamic> suppliersData =
       responseData['customers']['customers'];
 
       setState(() {
-        _customers =
-            customersData.map((data) => Customer.fromJson(data)).toList();
-        isCustomerFetched = true;
+        _suppliers =
+            suppliersData.map((data) => CustomerSupplier.fromJson(data)).toList();
+        isSupplierFetched = true;
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to fetch customers'),
+          content: Text('Failed to fetch suppliers'),
         ),
       );
     }
@@ -78,7 +78,7 @@ class _SupplierPageState extends State<SupplierPage> {
     _stateController.clear();
   }
 
-  Future<void> _createCustomer() async {
+  Future<void> _createSupplier() async {
     var request = http.MultipartRequest(
       'POST',
       Uri.parse(
@@ -104,10 +104,10 @@ class _SupplierPageState extends State<SupplierPage> {
           content: Text(responseData['description']),
         ));
         _clearForm();
-        _fetchCustomers(); // Refresh the customer list
+        _fetchSuppliers(); 
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to create customer'),
+          content: Text('Failed to create supplier'),
         ));
       }
     } else {
@@ -117,11 +117,11 @@ class _SupplierPageState extends State<SupplierPage> {
     }
   }
 
-  Future<void> _updateCustomer(int customerId) async {
+  Future<void> _updateSupplier(int supplierId) async {
     var request = http.MultipartRequest(
       'POST',
       Uri.parse(
-          '${API.baseURL}/admin/$branchID/customer/$customerId/update'),
+          '${API.baseURL}/admin/$branchID/customer/$supplierId/update'),
     );
     request.fields['name'] = _nameController.text;
     request.fields['phone'] = _phoneController.text;
@@ -144,10 +144,10 @@ class _SupplierPageState extends State<SupplierPage> {
           content: Text(responseData['description']),
         ));
         _clearForm();
-        _fetchCustomers(); // Refresh the customer list
+        _fetchSuppliers();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to update customer'),
+          content: Text('Failed to update supplier'),
         ));
       }
     } else {
@@ -157,10 +157,10 @@ class _SupplierPageState extends State<SupplierPage> {
     }
   }
 
-  Future<void> _deleteCustomer(int customerId) async {
+  Future<void> _deleteSupplier(int supplierId) async {
     final response = await http.delete(
       Uri.parse(
-          '${API.baseURL}/admin/$branchID/customer/$customerId/delete'),
+          '${API.baseURL}/admin/$branchID/customer/$supplierId/delete'),
       headers: {
         'Authorization': 'Bearer $apiToken',
       },
@@ -172,10 +172,10 @@ class _SupplierPageState extends State<SupplierPage> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(responseData['description']),
         ));
-        _fetchCustomers(); // Refresh the customer list
+        _fetchSuppliers();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to delete customer'),
+          content: Text('Failed to delete supplier'),
         ));
       }
     } else {
@@ -185,7 +185,7 @@ class _SupplierPageState extends State<SupplierPage> {
     }
   }
 
-  void showCustomerDialog({
+  void showSupplierDialog({
     required BuildContext context,
     required String title,
     required void Function() onAction,
@@ -198,7 +198,7 @@ class _SupplierPageState extends State<SupplierPage> {
     required TextEditingController cityController,
     required TextEditingController stateController,
     String actionText = 'Create',
-    String? customerId,
+    String? supplierId,
   }) {
     showDialog(
       context: context,
@@ -276,21 +276,21 @@ class _SupplierPageState extends State<SupplierPage> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            isCustomerFetched
+            isSupplierFetched
                 ? Expanded(
               child: ListView.builder(
-                itemCount: _customers.length,
+                itemCount: _suppliers.length,
                 itemBuilder: (context, index) {
-                  final customer = _customers[index];
+                  final supplier = _suppliers[index];
                   return Slidable(
-                    key: ValueKey(customer.id),
+                    key: ValueKey(supplier.id),
                     startActionPane: ActionPane(
                       motion: ScrollMotion(),
                       children: [
                         SlidableAction(
                           onPressed: (context) {
-                            _nameController.text = customer.name;
-                            _phoneController.text = customer.phone;
+                            _nameController.text = supplier.name;
+                            _phoneController.text = supplier.phone;
                             _emailController.text = '';
                             _addressController.text = '';
                             _areaController.text = '';
@@ -298,10 +298,10 @@ class _SupplierPageState extends State<SupplierPage> {
                             _cityController.text = '';
                             _stateController.text = '';
 
-                            showCustomerDialog(
+                            showSupplierDialog(
                               context: context,
-                              title: 'Update Customer',
-                              onAction: () => _updateCustomer(customer.id),
+                              title: 'Update Supplier',
+                              onAction: () => _updateSupplier(supplier.id),
                               actionText: 'Update',
                               nameController: _nameController,
                               phoneController: _phoneController,
@@ -328,7 +328,7 @@ class _SupplierPageState extends State<SupplierPage> {
                       children: [
                         SlidableAction(
                           onPressed: (context) {
-                            _deleteCustomer(customer.id);
+                            _deleteSupplier(supplier.id);
                           },
                           borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
                           backgroundColor: Colors
@@ -355,7 +355,7 @@ class _SupplierPageState extends State<SupplierPage> {
                             children: [
                               const Icon(Icons.person,size: 20,color: AppConstants.primaryTextColor,),
                               const SizedBox(width: 2,),
-                              Text(customer.name,
+                              Text(supplier.name,
                                   softWrap: true,
                                   style: const TextStyle(
                                       color: AppConstants
@@ -369,7 +369,7 @@ class _SupplierPageState extends State<SupplierPage> {
                           children: [
                             Icon(Icons.phone,size: 20,color: AppConstants.primaryTextColor,),
                             SizedBox(width: 2,),
-                            Text(customer.phone,
+                            Text(supplier.phone,
                                 softWrap: true,
                                 style: const TextStyle(
                                     color: AppConstants
@@ -377,15 +377,12 @@ class _SupplierPageState extends State<SupplierPage> {
                                     fontSize: 16)),
                           ],
                         ),
-                        trailing: Text("৳${customer.balance}", style: TextStyle(fontSize:  16),),
-                        // title: Text(customer.name),
-                        // subtitle: Text(customer.phone),
-                        // trailing: Text(customer.balance), // Adjust this to show actual balance if available
+                        trailing: Text("৳${supplier.balance}", style: TextStyle(fontSize:  16),),
                         onTap: () {
                           Get.to(() => TransactionPage(
                             token: user!.apiToken,
                             branchId: user!.branchId,
-                            customerId: customer.id,
+                            Id: supplier.id,
                           ));
                         },
                       ),
@@ -404,10 +401,10 @@ class _SupplierPageState extends State<SupplierPage> {
               Icons.add
           ),
           onPressed: () {
-            showCustomerDialog(
+            showSupplierDialog(
               context: context,
-              title: 'Add Customer',
-              onAction: _createCustomer,
+              title: 'Add Supplier',
+              onAction: _createSupplier,
               actionText: 'Create',
               nameController: _nameController,
               phoneController: _phoneController,
