@@ -9,14 +9,14 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'dart:convert';
 import '../Services/api.dart';
 
-class CustomerPage extends StatefulWidget {
-  const CustomerPage({Key? key}) : super(key: key);
+class SupplierPage extends StatefulWidget {
+  const SupplierPage({Key? key}) : super(key: key);
 
   @override
-  _CustomerPageState createState() => _CustomerPageState();
+  _SupplierPageState createState() => _SupplierPageState();
 }
 
-class _CustomerPageState extends State<CustomerPage> {
+class _SupplierPageState extends State<SupplierPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -25,7 +25,7 @@ class _CustomerPageState extends State<CustomerPage> {
   final TextEditingController _postCodeController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
-  final int type = 0; // 0 for Customer, 1 for Supplier
+  final int type = 1; // 0 for Customer, 1 for Supplier
 
   String apiToken = user!.apiToken;
   int branchID = user!.branchId;
@@ -47,11 +47,11 @@ class _CustomerPageState extends State<CustomerPage> {
         'Authorization': 'Bearer $apiToken',
       },
     );
-
+    print(response.body);
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       final List<dynamic> customersData =
-          responseData['customers']['customers'];
+      responseData['customers']['customers'];
 
       setState(() {
         _customers =
@@ -271,155 +271,155 @@ class _CustomerPageState extends State<CustomerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppConstants.scaffoldBackgroundColor,
-      appBar: AppConstants.appBarPrimary(title: "Customers"),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          isCustomerFetched
-              ? Expanded(
-                  child: ListView.builder(
-                    itemCount: _customers.length,
-                    itemBuilder: (context, index) {
-                      final customer = _customers[index];
-                      return Slidable(
-                        key: ValueKey(customer.id),
-                        startActionPane: ActionPane(
-                          motion: ScrollMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (context) {
-                                _nameController.text = customer.name;
-                                _phoneController.text = customer.phone;
-                                _emailController.text = '';
-                                _addressController.text = '';
-                                _areaController.text = '';
-                                _postCodeController.text = '';
-                                _cityController.text = '';
-                                _stateController.text = '';
+        backgroundColor: AppConstants.scaffoldBackgroundColor,
+        appBar: AppConstants.appBarPrimary(title: "Suppliers"),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            isCustomerFetched
+                ? Expanded(
+              child: ListView.builder(
+                itemCount: _customers.length,
+                itemBuilder: (context, index) {
+                  final customer = _customers[index];
+                  return Slidable(
+                    key: ValueKey(customer.id),
+                    startActionPane: ActionPane(
+                      motion: ScrollMotion(),
+                      children: [
+                        SlidableAction(
+                          onPressed: (context) {
+                            _nameController.text = customer.name;
+                            _phoneController.text = customer.phone;
+                            _emailController.text = '';
+                            _addressController.text = '';
+                            _areaController.text = '';
+                            _postCodeController.text = '';
+                            _cityController.text = '';
+                            _stateController.text = '';
 
-                                showCustomerDialog(
-                                  context: context,
-                                  title: 'Update Customer',
-                                  onAction: () => _updateCustomer(customer.id),
-                                  actionText: 'Update',
-                                  nameController: _nameController,
-                                  phoneController: _phoneController,
-                                  emailController: _emailController,
-                                  addressController: _addressController,
-                                  areaController: _areaController,
-                                  postCodeController: _postCodeController,
-                                  cityController: _cityController,
-                                  stateController: _stateController,
-                                );
-                              },
-                              borderRadius: const BorderRadius.horizontal(right: Radius.circular(12)),
-                              backgroundColor: Colors
-                                  .blue, // Change this to your desired background color
-                              foregroundColor:
-                                  Colors.white, // Icon and text color
-                              icon: Icons.edit,
-                              label: 'Edit',
-                            ),
-                          ],
+                            showCustomerDialog(
+                              context: context,
+                              title: 'Update Customer',
+                              onAction: () => _updateCustomer(customer.id),
+                              actionText: 'Update',
+                              nameController: _nameController,
+                              phoneController: _phoneController,
+                              emailController: _emailController,
+                              addressController: _addressController,
+                              areaController: _areaController,
+                              postCodeController: _postCodeController,
+                              cityController: _cityController,
+                              stateController: _stateController,
+                            );
+                          },
+                          borderRadius: const BorderRadius.horizontal(right: Radius.circular(12)),
+                          backgroundColor: Colors
+                              .blue, // Change this to your desired background color
+                          foregroundColor:
+                          Colors.white, // Icon and text color
+                          icon: Icons.edit,
+                          label: 'Edit',
                         ),
-                        endActionPane: ActionPane(
-                          motion: ScrollMotion(),
+                      ],
+                    ),
+                    endActionPane: ActionPane(
+                      motion: ScrollMotion(),
+                      children: [
+                        SlidableAction(
+                          onPressed: (context) {
+                            _deleteCustomer(customer.id);
+                          },
+                          borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
+                          backgroundColor: Colors
+                              .red, // Change this to your desired background color
+                          foregroundColor:
+                          Colors.white, // Icon and text color
+                          icon: Icons.delete,
+                          label: 'Delete',
+                        ),
+                      ],
+                    ),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 1),
+                      decoration: BoxDecoration(
+                        gradient: AppConstants.secondaryGradient,
+                        // color: AppConstants.primaryColor,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: ListTile(
+                        textColor: AppConstants.primaryTextColor,
+                        title: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.person,size: 20,color: AppConstants.primaryTextColor,),
+                              const SizedBox(width: 2,),
+                              Text(customer.name,
+                                  softWrap: true,
+                                  style: const TextStyle(
+                                      color: AppConstants
+                                          .primaryTextColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                        ),
+                        subtitle: Row(
                           children: [
-                            SlidableAction(
-                              onPressed: (context) {
-                                _deleteCustomer(customer.id);
-                              },
-                              borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
-                              backgroundColor: Colors
-                                  .red, // Change this to your desired background color
-                              foregroundColor:
-                                  Colors.white, // Icon and text color
-                              icon: Icons.delete,
-                              label: 'Delete',
-                            ),
+                            Icon(Icons.phone,size: 20,color: AppConstants.primaryTextColor,),
+                            SizedBox(width: 2,),
+                            Text(customer.phone,
+                                softWrap: true,
+                                style: const TextStyle(
+                                    color: AppConstants
+                                        .primaryTextColor,
+                                    fontSize: 16)),
                           ],
                         ),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 1),
-                          decoration: BoxDecoration(
-                            gradient: AppConstants.secondaryGradient,
-                            // color: AppConstants.primaryColor,
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          child: ListTile(
-                            textColor: AppConstants.primaryTextColor,
-                            title: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4.0),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.person,size: 20,color: AppConstants.primaryTextColor,),
-                                  const SizedBox(width: 2,),
-                                  Text(customer.name,
-                                      softWrap: true,
-                                      style: const TextStyle(
-                                          color: AppConstants
-                                              .primaryTextColor,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500)),
-                                ],
-                              ),
-                            ),
-                            subtitle: Row(
-                              children: [
-                                Icon(Icons.phone,size: 20,color: AppConstants.primaryTextColor,),
-                                SizedBox(width: 2,),
-                                Text(customer.phone,
-                                    softWrap: true,
-                                    style: const TextStyle(
-                                        color: AppConstants
-                                            .primaryTextColor,
-                                        fontSize: 16)),
-                              ],
-                            ),
-                            trailing: Text("৳${customer.balance}", style: TextStyle(fontSize:  16),),
-                            // title: Text(customer.name),
-                            // subtitle: Text(customer.phone),
-                            // trailing: Text(customer.balance), // Adjust this to show actual balance if available
-                            onTap: () {
-                              Get.to(() => TransactionPage(
-                                    token: user!.apiToken,
-                                    branchId: user!.branchId,
-                                    customerId: customer.id,
-                                  ));
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                )
-              : const Center(child: CircularProgressIndicator()),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppConstants.secondaryColor,
-        child: const Icon(
-          color: AppConstants.primaryTextColor,
-            Icons.add
+                        trailing: Text("৳${customer.balance}", style: TextStyle(fontSize:  16),),
+                        // title: Text(customer.name),
+                        // subtitle: Text(customer.phone),
+                        // trailing: Text(customer.balance), // Adjust this to show actual balance if available
+                        onTap: () {
+                          Get.to(() => TransactionPage(
+                            token: user!.apiToken,
+                            branchId: user!.branchId,
+                            customerId: customer.id,
+                          ));
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
+                : const Center(child: CircularProgressIndicator()),
+          ],
         ),
-        onPressed: () {
-          showCustomerDialog(
-            context: context,
-            title: 'Add Customer',
-            onAction: _createCustomer,
-            actionText: 'Create',
-            nameController: _nameController,
-            phoneController: _phoneController,
-            emailController: _emailController,
-            addressController: _addressController,
-            areaController: _areaController,
-            postCodeController: _postCodeController,
-            cityController: _cityController,
-            stateController: _stateController,
-          );
-        },
-      )
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: AppConstants.secondaryColor,
+          child: const Icon(
+              color: AppConstants.primaryTextColor,
+              Icons.add
+          ),
+          onPressed: () {
+            showCustomerDialog(
+              context: context,
+              title: 'Add Customer',
+              onAction: _createCustomer,
+              actionText: 'Create',
+              nameController: _nameController,
+              phoneController: _phoneController,
+              emailController: _emailController,
+              addressController: _addressController,
+              areaController: _areaController,
+              postCodeController: _postCodeController,
+              cityController: _cityController,
+              stateController: _stateController,
+            );
+          },
+        )
     );
   }
 }

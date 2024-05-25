@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:retina_soft_skill_test/authentitacion/registration.dart';
+import 'package:retina_soft_skill_test/constants/app_constants.dart';
+import 'package:retina_soft_skill_test/constants/custom_button.dart';
 import '../Services/api.dart';
 import 'package:retina_soft_skill_test/Pages/home_screen.dart';
 import 'dart:convert';
@@ -74,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(responseData['description']),
         ));
-        Get.to(HomeScreen());
+        Get.offAll(HomeScreen());
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Login failed'),
@@ -90,9 +92,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('OTP Login'),
-      ),
+      appBar: AppConstants.appBarPrimary(title: "OTP Login"),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -111,16 +111,16 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ],
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _isOtpSent ? _login : _sendOtp,
-              child: Text(_isOtpSent ? 'Login' : 'Send OTP'),
-            ),
-            SizedBox(height: 50,),
+            CustomButton(
+              height: 50,
+                onPressed: _isOtpSent ? _login : _sendOtp,
+                text: _isOtpSent ? 'Login' : 'Send OTP'),
+            SizedBox(height: 20,),
             TextButton(
               onPressed: () {
                 Get.to(() => RegistrationPage());
               },
-              child: const Text("Register Here"),
+              child: const Text("Register Here",style: TextStyle(fontSize: 18),),
             ),
           ],
         ),

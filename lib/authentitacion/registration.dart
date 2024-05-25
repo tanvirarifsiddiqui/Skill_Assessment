@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:retina_soft_skill_test/authentitacion/login.dart';
 import 'package:retina_soft_skill_test/constants/app_constants.dart';
+import 'package:retina_soft_skill_test/constants/custom_button.dart';
 
 import '../Services/api.dart';
 import '../Global/global_variables.dart';
@@ -109,7 +110,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(responseData['description']),
         ));
-        Get.to(HomeScreen());
+        Get.offAll(HomeScreen());
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(responseData['description']),
@@ -161,74 +162,83 @@ class _RegistrationPageState extends State<RegistrationPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (!_isRegistered) ...[
-                TextField(
-                  controller: _emailController,
-                  decoration: CustomInputDecoration.buildInputDecoration('Email'),
+              Container(
+                margin: EdgeInsets.only(top: MediaQuery.of(context).size.height*.1),
+                child: Column(
+                  children: [
+                    if (!_isRegistered) ...[
+                      TextField(
+                        controller: _emailController,
+                        decoration: CustomInputDecoration.buildInputDecoration('Email'),
+                      ),
+                      SizedBox(height: 10),
+                      TextField(
+                        controller: _phoneController,
+                        decoration: CustomInputDecoration.buildInputDecoration('Phone'),
+                      ),
+                      SizedBox(height: 10),
+                      TextField(
+                        controller: _nameController,
+                        decoration: CustomInputDecoration.buildInputDecoration('Name'),
+                      ),
+                      SizedBox(height: 10),
+                      TextField(
+                        controller: _businessNameController,
+                        decoration: CustomInputDecoration.buildInputDecoration('Business Name'),
+                      ),
+                      SizedBox(height: 10),
+                      DropdownButtonFormField<int>(
+                        value: _selectedBusinessTypeId,
+                        decoration: CustomInputDecoration.buildInputDecoration('Business Type'),
+                        items: _businessTypes.map<DropdownMenuItem<int>>((type) {
+                          return DropdownMenuItem<int>(
+                            value: type['id'],
+                            child: Text(type['name']),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedBusinessTypeId = value;
+                          });
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      CustomButton(
+                        height: 50,
+                        onPressed: _sendOtp,
+                        text: 'Send OTP',
+                      ),
+                      if (_isOtpSent) ...[
+                        SizedBox(height: 10),
+                        TextField(
+                          controller: _otpController,
+                          decoration: CustomInputDecoration.buildInputDecoration('OTP Code'),
+                          keyboardType: TextInputType.number,
+                        ),
+                        SizedBox(height: 20),
+                        CustomButton(
+                          height: 50,
+                          onPressed: _verifyOtp,
+                          text: 'Verify OTP',
+                        ),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: _resendOtp,
+                          child: Text('Resend OTP'),
+                        ),
+                      ],
+                    ] else ...[
+                      const Text('Registration successful!'),
+                    ],
+                  ],
                 ),
-                SizedBox(height: 10),
-                TextField(
-                  controller: _phoneController,
-                  decoration: CustomInputDecoration.buildInputDecoration('Phone'),
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  controller: _nameController,
-                  decoration: CustomInputDecoration.buildInputDecoration('Name'),
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  controller: _businessNameController,
-                  decoration: CustomInputDecoration.buildInputDecoration('Business Name'),
-                ),
-                SizedBox(height: 10),
-                DropdownButtonFormField<int>(
-                  value: _selectedBusinessTypeId,
-                  decoration: CustomInputDecoration.buildInputDecoration('Business Type'),
-                  items: _businessTypes.map<DropdownMenuItem<int>>((type) {
-                    return DropdownMenuItem<int>(
-                      value: type['id'],
-                      child: Text(type['name']),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedBusinessTypeId = value;
-                    });
-                  },
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _sendOtp,
-                  child: Text('Send OTP'),
-                ),
-                if (_isOtpSent) ...[
-                  SizedBox(height: 10),
-                  TextField(
-                    controller: _otpController,
-                    decoration: CustomInputDecoration.buildInputDecoration('OTP Code'),
-                    keyboardType: TextInputType.number,
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _verifyOtp,
-                    child: Text('Verify OTP'),
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _resendOtp,
-                    child: Text('Resend OTP'),
-                  ),
-                ],
-              ] else ...[
-                Text('Registration successful!'),
-              ],
-              SizedBox(height: 50),
+              ),
+              const SizedBox(height: 20),
               TextButton(
                 onPressed: () {
                   Get.to(() => LoginPage());
                 },
-                child: Text("Login Screen"),
+                child: Text("Login Here",style: TextStyle(fontSize: 18),),
               ),
             ],
           ),

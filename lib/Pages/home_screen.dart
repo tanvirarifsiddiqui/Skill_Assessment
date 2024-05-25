@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:retina_soft_skill_test/Pages/customer_page.dart';
-import 'package:retina_soft_skill_test/Pages/profile_page.dart';
+import 'package:retina_soft_skill_test/Pages/supplier_page.dart';
 
 import '../Global/global_variables.dart';
 
@@ -15,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [
     CustomerPage(),
-    ProfilePage(),
+    SupplierPage(),
   ];
 
   void _onTabTapped(int index) {
@@ -33,12 +33,12 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: _onTabTapped,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.people),
+            label: 'Customers',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.emoji_people),
+            label: 'Suppliers',
           ),
         ],
       ),
