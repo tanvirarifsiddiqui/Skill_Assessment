@@ -15,7 +15,12 @@ class MyApp extends StatelessWidget {
       title: 'Flutter OTP Login',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: AppConstants.primaryThemeColor,
+        textTheme: const TextTheme(
+          headlineMedium: TextStyle(color: AppConstants.primaryColor),
+          headlineSmall: TextStyle(color: AppConstants.primaryColor),
+
+        ),
+        primaryColor: AppConstants.primaryColor, colorScheme: ColorScheme.fromSwatch(primarySwatch: AppConstants.primaryThemeColor).copyWith(background: AppConstants.scaffoldBackgroundColor),
       ),
       home: RegistrationPage(),
     );

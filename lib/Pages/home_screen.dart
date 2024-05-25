@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:retina_soft_skill_test/Pages/dashboard.dart';
+import 'package:retina_soft_skill_test/Pages/customer_page.dart';
 import 'package:retina_soft_skill_test/Pages/profile_page.dart';
 
 import '../Global/global_variables.dart';
@@ -14,7 +14,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    DashboardPage(),
+    CustomerPage(),
     ProfilePage(),
   ];
 
