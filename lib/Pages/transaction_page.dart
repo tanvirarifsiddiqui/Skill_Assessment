@@ -98,7 +98,7 @@ class _TransactionPageState extends State<TransactionPage> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to create transaction'),
+            content: Text(responseData['description']),
           ),
         );
       }
@@ -116,18 +116,23 @@ class _TransactionPageState extends State<TransactionPage> {
       'POST',
       Uri.parse(
           '${API.baseURL}/admin/${widget.branchId}/customer/transaction/$transactionId/update'),
+      //https://skill-test.retinasoft.com.bd/api/v1/admin/15/customer/transaction/3/update
     );
     request.fields['amount'] = _amountController.text;
     request.fields['transaction_date'] = _transactionDateTimeController.text;
     request.fields['details'] = _detailsController.text;
     request.fields['bill_no'] = _billNoController.text;
+    print(_amountController.text.toString());
 
     request.headers['Authorization'] = 'Bearer ${widget.token}';
 
     var response = await request.send();
-
+    print(response.statusCode);
     if (response.statusCode == 200) {
+
       final responseData = json.decode(await response.stream.bytesToString());
+      print(responseData['description']);
+
       if (responseData['status'] == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -139,7 +144,7 @@ class _TransactionPageState extends State<TransactionPage> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to update transaction'),
+            content: Text(responseData['description']),
           ),
         );
       }
